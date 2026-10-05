@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IOC 智能运维管理平台</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="vendor/echarts.min.js"></script>
+  <script src="vendor/three.min.js"></script>
+</head>
+<body>
+  <!-- ============ 片头 ============ -->
+  <div id="intro">
+    <canvas id="intro-canvas"></canvas>
+    <div class="intro-title">
+      <h1>IOC 智能运维管理平台</h1>
+      <p>三维机房 · AI 巡检 · 智能运维</p>
+    </div>
+    <button id="intro-skip">跳过片头 ▸</button>
+    <div class="intro-bar"><span></span></div>
+  </div>
+
+  <!-- ============ 应用主体 ============ -->
+  <div id="app" class="hidden">
+    <!-- 顶部 -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-logo">◈</span>
+        <span class="brand-name">IOC 智能运维管理平台</span>
+      </div>
+      <nav class="nav" id="nav">
+        <a class="nav-item active" role="button" tabindex="0" data-page="总览">总览</a>
+        <a class="nav-item" role="button" tabindex="0" data-page="机房监控">机房监控</a>
+        <a class="nav-item" role="button" tabindex="0" data-page="资产管理">资产管理</a>
+        <a class="nav-item" role="button" tabindex="0" data-page="能效管理">能效管理</a>
+        <a class="nav-item" role="button" tabindex="0" data-page="告警中心">告警中心</a>
+        <a class="nav-item" role="button" tabindex="0" data-page="运维工单">运维工单</a>
+      </nav>
+      <div class="top-right">
+        <span class="weather">上海　16℃</span>
+        <span class="admin">管理员</span>
+      </div>
+    </header>
+
+    <!-- 中部 -->
+    <div class="layout">
+      <main id="content">
+        <!-- 1. 总览 -->
+        <section class="page active" id="page-overview">
+          <div class="page-grid ov-grid">
+            <div class="panel ov-score">
+              <div class="panel-title">机房健康评分</div>
+              <div id="ov-score-chart" class="chart"></div>
+              <div class="ov-score-nums" id="ov-score-nums"></div>
+            </div>
+            <div class="panel ov-env">
+              <div class="panel-title">环境监控</div>
+              <div class="env-cards" id="ov-env-cards"></div>
+              <div id="ov-spark-chart" class="chart spark-chart"></div>
+            </div>
+            <div class="panel ov-alarm24">
+              <div class="panel-title">近 24h 告警趋势 <small>共 12 起</small></div>
+              <div id="ov-alarm24-chart" class="chart"></div>
+            </div>
+            <div class="panel ov-room">
+              <div class="panel-title">三维机房缩略</div>
+              <div class="ov-room-wrap">
+                <div id="ov-mini3d" class="mini3d"></div>
+                <div class="alarm-mini-card" id="ov-mini-alarm"></div>
+              </div>
+              <div class="corner-note">场景展示 42 台代表机柜</div>
+            </div>
+            <div class="panel ov-itload">
+              <div class="panel-title">IT 负载</div>
+              <div id="ov-itload-chart" class="chart"></div>
+            </div>
+            <div class="panel ov-energy">
+              <div class="panel-title">今日能耗</div>
+              <div id="ov-energy-num" class="big-num"></div>
+              <div id="ov-energy-delta" class="delta"></div>
+            </div>
+            <div class="panel ov-devtype">
+              <div class="panel-title">设备类型分布（台账口径 %）</div>
+              <div id="ov-devtype-chart" class="chart"></div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+
+        <!-- 2. 机房监控 -->
+        <section class="page" id="page-monitor">
+          <div class="monitor-wrap">
+            <aside class="panel locate-panel">
+              <div class="panel-title">设备定位</div>
+              <label class="field-label">机柜</label>
+              <select id="locate-select"></select>
+              <button class="btn cyan" id="locate-go">定位机柜</button>
+              <div class="field-label alarm-label">告警列表</div>
+              <ul class="alarm-quick-list" id="locate-alarms"></ul>
+            </aside>
+            <div class="room-stage" id="room-stage">
+              <div id="room-canvas"></div>
+              <div class="stage-hint">拖动旋转 · 滚轮缩放 · 点击机柜检视</div>
+              <div class="zone-temps" id="zone-temps"></div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统 · 场景展示 42 台代表机柜</div>
+        </section>
+
+        <!-- 3. 设备检视 -->
+        <section class="page" id="page-inspect">
+          <div class="inspect-wrap">
+            <aside class="panel inspect-info" id="inspect-info"></aside>
+            <div class="inspect-stage" id="inspect-stage">
+              <div id="inspect-canvas"></div>
+              <div class="inspect-controls">
+                <button class="btn cyan" id="door-toggle">开合柜门</button>
+                <button class="btn" id="inspect-back">返回整间机房</button>
+              </div>
+              <div class="stage-hint">拖动环绕查看 · 柜内分层模块随旋转同步</div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+
+        <!-- 4. 资产管理 -->
+        <section class="page" id="page-assets">
+          <div class="panel asset-overview" id="asset-overview"></div>
+          <div class="panel asset-filter">
+            <div class="filter-zone" id="asset-zone-filter"></div>
+            <input type="text" id="asset-search" placeholder="按编号搜索，如 A-02 / DC01-A-002" />
+          </div>
+          <div class="panel asset-table-wrap">
+            <table class="data-table" id="asset-table">
+              <thead>
+                <tr>
+                  <th>编号</th><th>位置 / 资产编号</th><th>温度</th><th>负载</th><th>状态</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+
+        <!-- 5. 能效管理 -->
+        <section class="page" id="page-energy">
+          <div class="panel energy-top" id="energy-top"></div>
+          <div class="energy-grid">
+            <div class="panel">
+              <div class="panel-title">用电趋势（kWh）
+                <span class="seg"><button class="seg-btn" data-range="today">今日</button><button class="seg-btn active" data-range="week">近 7 天</button></span>
+              </div>
+              <div id="energy-trend-chart" class="chart tall"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-title">PUE 趋势（目标 1.40）</div>
+              <div id="pue-chart" class="chart tall"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-title">用能构成（%）</div>
+              <div id="energy-comp-chart" class="chart tall"></div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+
+        <!-- 6. 告警中心 -->
+        <section class="page" id="page-alarms">
+          <div class="alarm-grid">
+            <div class="panel alarm-stats" id="alarm-stats"></div>
+            <div class="panel alarm-pending">
+              <div class="panel-title">待处置告警</div>
+              <ul id="alarm-pending-list"></ul>
+            </div>
+            <div class="panel alarm-detail-panel">
+              <div class="panel-title">告警详情与处置</div>
+              <div id="alarm-detail"></div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+
+        <!-- 7. 运维工单 -->
+        <section class="page" id="page-tickets">
+          <div class="ticket-grid">
+            <div class="panel ticket-list-panel">
+              <div class="panel-title">工单列表</div>
+              <ul id="ticket-list"></ul>
+            </div>
+            <div class="panel ticket-detail-panel">
+              <div class="panel-title">工单详情</div>
+              <div id="ticket-detail"></div>
+            </div>
+          </div>
+          <div class="demo-watermark">AI 辅助制作，使用演示数据，非真实机房上线系统</div>
+        </section>
+      </main>
+
+      <!-- 右侧小维 -->
+      <aside class="assistant" id="assistant">
+        <div class="assistant-head">
+          <span class="avatar">小维</span>
+          <div class="assistant-title">
+            <strong>小维 · 巡检助手</strong>
+            <span class="conn" id="conn-status">连接中…</span>
+          </div>
+        </div>
+        <div class="assistant-tabs">
+          <button class="as-tab active" data-tab="chat">巡检对话</button>
+          <button class="as-tab" data-tab="device">设备详情</button>
+        </div>
+
+        <div class="as-pane active" id="pane-chat">
+          <div class="msg-stream" id="msg-stream"></div>
+          <div class="switch-log" id="switch-log" title="供应商切换记录"></div>
+          <div class="quick-cmds" id="quick-cmds"></div>
+          <div class="chat-input">
+            <button class="mic-btn" id="mic-btn" title="语音输入">🎤</button>
+            <input type="text" id="chat-text" placeholder="输入或语音，如：去看看 A-02" />
+            <button class="send-btn" id="send-btn">发送</button>
+          </div>
+          <div class="voice-toggle">
+            <label><input type="checkbox" id="tts-toggle" checked /> 语音播报</label>
+            <button class="link-btn" id="custom-entry">自定义中转站</button>
+          </div>
+          <div class="provider-row">
+            <select id="provider-select" title="供应商"></select>
+            <input type="text" id="model-input" list="model-list" placeholder="模型（可手输）" />
+            <datalist id="model-list"></datalist>
+          </div>
+        </div>
+
+        <div class="as-pane" id="pane-device">
+          <div id="device-pane-body" class="device-pane-body"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 底部常驻 -->
+    <footer class="bottombar">
+      <div class="stat"><span class="stat-label">机柜总数</span><span class="stat-val" id="foot-racks">256</span></div>
+      <div class="stat"><span class="stat-label">总功率</span><span class="stat-val" id="foot-power">32.6 <em>kW</em></span></div>
+      <div class="stat"><span class="stat-label">PUE</span><span class="stat-val" id="foot-pue">1.36</span></div>
+      <div class="stat"><span class="stat-label">可用性</span><span class="stat-val" id="foot-avail">99.99<em>%</em></span></div>
+      <button class="mic-fab" id="mic-fab" title="语音对话">🎤</button>
+    </footer>
+
+    <!-- 自定义中转站弹层 -->
+    <div class="modal-mask hidden" id="custom-modal">
+      <div class="modal">
+        <div class="modal-title">配置自定义中转站</div>
+        <label>名称<input type="text" id="cm-name" placeholder="如：我的中转站" /></label>
+        <label>BaseUrl<input type="text" id="cm-base" placeholder="https://your-relay.com/v1" /></label>
+        <label>API Key<input type="password" id="cm-key" autocomplete="off" placeholder="sk-..." /></label>
+        <label>模型<input type="text" id="cm-model" placeholder="gpt-4o-mini" /></label>
+        <div class="modal-actions">
+          <button class="btn" id="cm-cancel">取消</button>
+          <button class="btn cyan" id="cm-save">保存</button>
+        </div>
+        <div class="modal-note">Key 仅存后端 providers.local.json（权限 600），不会回传浏览器。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 脚本（顺序：data 最先；soft3d 在 scene 之前以便降级） -->
+  <script src="js/data.js"></script>
+  <script src="js/soft3d.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

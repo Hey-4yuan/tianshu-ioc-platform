@@ -1,0 +1,17 @@
+{
+  "name": "tianshu-ioc-platform",
+  "version": "1.0.0",
+  "description": "天枢 · 智能运维中枢平台（Tianshu IOC）- 三维机房智能运维演示 Demo",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

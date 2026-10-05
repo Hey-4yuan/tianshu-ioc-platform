@@ -1,0 +1,13 @@
+{
+  "_comment": "复制本文件为 providers.json 可覆盖内置供应商的模型名/baseUrl；敏感 key 建议用环境变量或复制为 providers.local.json（已加入 .gitignore，权限 600）",
+  "providers": {
+    "deepseek": { "defaultModel": "deepseek-chat", "models": ["deepseek-chat", "deepseek-reasoner"] },
+    "ark": { "defaultModel": "doubao-seed-1-6-250615" },
+    "dashscope": { "defaultModel": "qwen-plus" },
+    "zhipu": { "defaultModel": "glm-4-plus" },
+    "moonshot": { "defaultModel": "moonshot-v1-8k" },
+    "qianfan": { "defaultModel": "ernie-4.0-8k" },
+    "minimax": { "defaultModel": "MiniMaxText-01" },
+    "openai": { "defaultModel": "gpt-4o-mini" }
+  }
+}
